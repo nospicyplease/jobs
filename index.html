@@ -51,6 +51,30 @@ body {
 }
 #sidebar .subtitle a { color: var(--fg2); }
 
+.sidebar-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#statsToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg2);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .stat-section {
   display: flex;
   flex-direction: column;
@@ -178,6 +202,7 @@ body {
   color: var(--fg2);
   cursor: pointer;
   transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .view-toggle button.active {
   background: rgba(255,255,255,0.08);
@@ -249,14 +274,171 @@ canvas#canvas {
   border-top: 1px solid rgba(255,255,255,0.06);
   padding-top: 8px;
 }
+
+/* ── Bottom sheet (mobile tooltip) ─────────────────────────────────── */
+
+#bottomSheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(18, 18, 26, 0.94);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px 16px 0 0;
+  padding: 8px 20px calc(env(safe-area-inset-bottom, 12px) + 16px);
+  z-index: 30;
+  max-height: 50vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  will-change: transform;
+  display: none;
+}
+#bottomSheet.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.bs-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+.bs-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: var(--fg2);
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.bs-close:active { background: rgba(255,255,255,0.12); }
+.bs-title {
+  font-weight: 600;
+  font-size: 17px;
+  color: #fff;
+  margin-bottom: 8px;
+  padding-right: 36px;
+}
+.bs-exposure { font-size: 13px; margin-bottom: 10px; }
+.bs-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.bs-stats .label { color: var(--fg2); }
+.bs-stats .value { color: var(--fg); text-align: right; }
+.bs-rationale {
+  font-size: 12px;
+  color: var(--fg2);
+  line-height: 1.5;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+  margin-bottom: 12px;
+}
+.bs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #6aadff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ── Mobile responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    bottom: auto;
+    width: 100%;
+    max-height: 55vh;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  #sidebar h1 { font-size: 15px; }
+  #sidebar .subtitle { font-size: 10px; }
+
+  #statsToggle {
+    display: flex;
+  }
+
+  #sidebar.stats-open #statsToggle {
+    transform: rotate(180deg);
+  }
+
+  #sidebarStats {
+    display: none;
+  }
+
+  #sidebar.stats-open #sidebarStats {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 38vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-toggle button {
+    padding: 10px 0;
+    font-size: 12px;
+    min-height: 44px;
+  }
+
+  .stat-section h3 { font-size: 11px; }
+  .stat-label { font-size: 12px; }
+  .tier-row { font-size: 12px; }
+  .tier-pct { font-size: 11px; }
+  .hbar-row { font-size: 12px; }
+  .hbar-label { font-size: 11px; }
+  .hist-labels { font-size: 10px; }
+
+  canvas#canvas {
+    left: 0;
+    touch-action: none;
+  }
+
+  #tooltip {
+    display: none !important;
+  }
+
+  #bottomSheet {
+    display: block;
+  }
+}
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <div>
-    <h1>AI Exposure of the US Job Market</h1>
-    <div class="subtitle">342 occupations &middot; color = AI exposure<br>Data from <a href="https://www.bls.gov/ooh/">BLS</a>, scored by Gemini Flash<br><a href="https://github.com/karpathy/jobs">GitHub</a></div>
+  <div class="sidebar-header">
+    <div>
+      <h1>AI Exposure of the US Job Market</h1>
+      <div class="subtitle">342 occupations &middot; color = AI exposure<br>Data from <a href="https://www.bls.gov/ooh/">BLS</a>, scored by Gemini Flash<br><a href="https://github.com/karpathy/jobs">GitHub</a></div>
+    </div>
+    <button id="statsToggle" aria-label="Toggle stats panel">&#x25BC;</button>
   </div>
 
   <div class="view-toggle">
@@ -264,48 +446,50 @@ canvas#canvas {
     <button onclick="setView('scatter')">Exposure vs Outlook</button>
   </div>
 
-  <div class="stat-section">
-    <h3>Total jobs</h3>
-    <div class="stat-big" id="statTotalJobs">—</div>
-  </div>
+  <div id="sidebarStats">
+    <div class="stat-section">
+      <h3>Total jobs</h3>
+      <div class="stat-big" id="statTotalJobs">&mdash;</div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Weighted avg. exposure</h3>
-    <div class="stat-big" id="statAvgExposure">—</div>
-    <div class="stat-label">job-weighted, 0–10 scale</div>
-  </div>
+    <div class="stat-section">
+      <h3>Weighted avg. exposure</h3>
+      <div class="stat-big" id="statAvgExposure">&mdash;</div>
+      <div class="stat-label">job-weighted, 0&ndash;10 scale</div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Jobs by exposure (weighted by employment)</h3>
-    <div class="histogram" id="histogram"></div>
-    <div class="hist-labels"><span>0</span><span>5</span><span>10</span></div>
-  </div>
+    <div class="stat-section">
+      <h3>Jobs by exposure (weighted by employment)</h3>
+      <div class="histogram" id="histogram"></div>
+      <div class="hist-labels"><span>0</span><span>5</span><span>10</span></div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Breakdown</h3>
-    <div class="tier-bar" id="tierBar"></div>
-  </div>
+    <div class="stat-section">
+      <h3>Breakdown</h3>
+      <div class="tier-bar" id="tierBar"></div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Exposure by pay</h3>
-    <div class="hbar-chart" id="payChart"></div>
-  </div>
+    <div class="stat-section">
+      <h3>Exposure by pay</h3>
+      <div class="hbar-chart" id="payChart"></div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Exposure by education</h3>
-    <div class="hbar-chart" id="eduChart"></div>
-  </div>
+    <div class="stat-section">
+      <h3>Exposure by education</h3>
+      <div class="hbar-chart" id="eduChart"></div>
+    </div>
 
-  <div class="stat-section">
-    <h3>Wages exposed</h3>
-    <div class="stat-big" id="statWages">—</div>
-    <div class="stat-label" id="statWagesDesc">annual wages in high-exposure jobs (7+)</div>
-  </div>
+    <div class="stat-section">
+      <h3>Wages exposed</h3>
+      <div class="stat-big" id="statWages">&mdash;</div>
+      <div class="stat-label" id="statWagesDesc">annual wages in high-exposure jobs (7+)</div>
+    </div>
 
-  <div class="gradient-legend">
-    <span>Low</span>
-    <canvas id="gradientLegend" width="80" height="8"></canvas>
-    <span>High</span>
+    <div class="gradient-legend">
+      <span>Low</span>
+      <canvas id="gradientLegend" width="80" height="8"></canvas>
+      <span>High</span>
+    </div>
   </div>
 </div>
 
@@ -316,6 +500,16 @@ canvas#canvas {
   <div class="tt-exposure"></div>
   <div class="tt-stats"></div>
   <div class="tt-rationale"></div>
+</div>
+
+<div id="bottomSheet">
+  <div class="bs-handle"></div>
+  <button class="bs-close" aria-label="Close">&times;</button>
+  <div class="bs-title"></div>
+  <div class="bs-exposure"></div>
+  <div class="bs-stats"></div>
+  <div class="bs-rationale"></div>
+  <a class="bs-link" target="_blank" rel="noopener">View on BLS &rarr;</a>
 </div>
 
 <script>
@@ -347,7 +541,6 @@ function exposureColorCSS(score, alpha) {
 
 function outlookColorCSS(outlook, alpha) {
   if (outlook == null) return `rgba(128,128,128,${alpha})`;
-  // Clamp to +/-12% for good saturation without overdoing it
   const t = Math.max(0, Math.min(1, (outlook + 12) / 24));
   let r, g, b;
   if (t < 0.5) {
@@ -441,6 +634,24 @@ function worstAspect(row, rowSum, side, totalArea, availableExtent) {
   return worst;
 }
 
+// ── Mobile helpers ─────────────────────────────────────────────────────
+
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function getSidebarW() {
+  if (isMobile()) return 0;
+  return parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'));
+}
+
+function getCanvasOffset() {
+  if (isMobile()) {
+    return { x: 0, y: document.getElementById('sidebar').offsetHeight };
+  }
+  return { x: getSidebarW(), y: 0 };
+}
+
 // ── Rendering ──────────────────────────────────────────────────────────
 
 let data = [];
@@ -461,23 +672,26 @@ function setView(view) {
   document.querySelector(`.view-toggle button[onclick="setView('${view}')"]`).classList.add("active");
   hovered = null;
   hideTooltip();
+  hideBottomSheet();
   resize();
 }
 
 function layout() {
-  const sidebarW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'));
-  const w = (window.innerWidth - sidebarW);
-  const h = window.innerHeight;
+  const sidebarW = getSidebarW();
+  const w = window.innerWidth - sidebarW;
+  const sidebarH = isMobile() ? document.getElementById('sidebar').offsetHeight : 0;
+  const h = window.innerHeight - sidebarH;
 
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   canvas.style.width = w + "px";
   canvas.style.height = h + "px";
 
-  const tx = MARGIN;
-  const ty = MARGIN;
-  const tw = w - MARGIN * 2;
-  const th = h - MARGIN * 2;
+  const margin = isMobile() ? 6 : MARGIN;
+  const tx = margin;
+  const ty = margin;
+  const tw = w - margin * 2;
+  const th = h - margin * 2;
 
   const byCategory = {};
   for (const d of data) {
@@ -564,9 +778,9 @@ function draw() {
 }
 
 function hitTest(mx, my) {
-  const sidebarW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'));
-  const cx = mx - sidebarW;
-  const cy = my;
+  const offset = getCanvasOffset();
+  const cx = mx - offset.x;
+  const cy = my - offset.y;
   for (let i = rects.length - 1; i >= 0; i--) {
     const r = rects[i];
     if (cx >= r.rx && cx < r.rx + r.rw && cy >= r.ry && cy < r.ry + r.rh) {
@@ -589,6 +803,8 @@ function formatPay(n) {
 }
 
 function showTooltip(d, mx, my) {
+  if (isMobile()) return;
+
   const tt = document.getElementById("tooltip");
 
   tt.querySelector(".tt-title").textContent = d.title;
@@ -631,14 +847,58 @@ function hideTooltip() {
   document.getElementById("tooltip").classList.remove("visible");
 }
 
+// ── Bottom sheet (mobile) ──────────────────────────────────────────────
+
+function showBottomSheet(d) {
+  const bs = document.getElementById("bottomSheet");
+
+  bs.querySelector(".bs-title").textContent = d.title;
+
+  const score = d.exposure != null ? d.exposure : null;
+  if (score != null) {
+    const barWidth = score * 10;
+    const color = exposureColorCSS(score, 1);
+    bs.querySelector(".bs-exposure").innerHTML =
+      `<span style="color:${color};font-weight:600;">AI Exposure: ${score}/10</span>` +
+      `<div style="margin-top:4px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;">` +
+      `<div style="height:100%;width:${barWidth}%;background:${color};border-radius:3px;"></div></div>`;
+  } else {
+    bs.querySelector(".bs-exposure").innerHTML = "";
+  }
+
+  bs.querySelector(".bs-stats").innerHTML = `
+    <span class="label">Median pay</span><span class="value">${formatPay(d.pay)}</span>
+    <span class="label">Jobs (2024)</span><span class="value">${formatNumber(d.jobs)}</span>
+    <span class="label">Outlook</span><span class="value">${d.outlook != null ? d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
+    <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>
+  `;
+
+  bs.querySelector(".bs-rationale").textContent = d.exposure_rationale || "";
+
+  const link = bs.querySelector(".bs-link");
+  if (d.url) {
+    link.href = d.url;
+    link.style.display = "inline-flex";
+  } else {
+    link.style.display = "none";
+  }
+
+  bs.classList.add("visible");
+}
+
+function hideBottomSheet() {
+  document.getElementById("bottomSheet").classList.remove("visible");
+}
+
 // ── Column view (exposure x outlook) ────────────────────────────────────
 
 let colRects = [];
 
 function layoutColumns() {
-  const sidebarW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'));
-  const w = (window.innerWidth - sidebarW);
-  const h = window.innerHeight;
+  const sidebarW = getSidebarW();
+  const w = window.innerWidth - sidebarW;
+  const sidebarH = isMobile() ? document.getElementById('sidebar').offsetHeight : 0;
+  const h = window.innerHeight - sidebarH;
 
   canvas.width = w * dpr;
   canvas.height = h * dpr;
@@ -650,7 +910,6 @@ function layoutColumns() {
   const plotH = h - pad.top - pad.bottom;
   const colGap = 2;
 
-  // Group by exposure score
   const byExposure = {};
   let totalJobs = 0;
   for (const d of data) {
@@ -660,11 +919,9 @@ function layoutColumns() {
     totalJobs += d.jobs || 0;
   }
 
-  // Find which exposure scores exist
   const scores = Object.keys(byExposure).map(Number).sort((a, b) => a - b);
   const numCols = scores.length;
 
-  // Column widths proportional to total jobs in that exposure level
   const colJobTotals = scores.map(s => byExposure[s].reduce((sum, d) => sum + (d.jobs || 0), 0));
   const totalGap = colGap * (numCols - 1);
   const availW = plotW - totalGap;
@@ -678,7 +935,6 @@ function layoutColumns() {
     const colJobs = colJobTotals[i];
     const colW = (colJobs / totalJobs) * availW;
 
-    // Sort by outlook descending (best outlook at top)
     items.sort((a, b) => (b.outlook || 0) - (a.outlook || 0));
 
     let cy = pad.top;
@@ -693,7 +949,6 @@ function layoutColumns() {
     cx += colW + colGap;
   }
 
-  // Store metadata for axis drawing
   colRects._meta = { scores, pad, colJobTotals, totalJobs, availW, plotH, colGap };
 }
 
@@ -707,7 +962,6 @@ function drawColumns() {
   const meta = colRects._meta;
   if (!meta) return;
 
-  // Draw column headers (exposure scores)
   ctx.font = "500 11px -apple-system, system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
@@ -722,15 +976,12 @@ function drawColumns() {
     hx += colW + meta.colGap;
   }
 
-  // Draw axis label
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.font = "11px -apple-system, system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  const canvasW = w / dpr;
   ctx.fillText("AI Exposure", meta.pad.left + meta.availW / 2, meta.pad.top + meta.plotH + 6);
 
-  // Draw rectangles
   const gap = 0.5;
   for (const r of colRects) {
     const isHovered = r === hovered;
@@ -750,7 +1001,6 @@ function drawColumns() {
       ctx.strokeRect(rx, ry, rw, rh);
     }
 
-    // Labels
     if (rw > 40 && rh > 14) {
       ctx.save();
       ctx.beginPath();
@@ -778,9 +1028,9 @@ function drawColumns() {
 }
 
 function hitTestColumns(mx, my) {
-  const sidebarW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'));
-  const cx = mx - sidebarW;
-  const cy = my;
+  const offset = getCanvasOffset();
+  const cx = mx - offset.x;
+  const cy = my - offset.y;
   for (let i = colRects.length - 1; i >= 0; i--) {
     const r = colRects[i];
     if (cx >= r.rx && cx < r.rx + r.rw && cy >= r.ry && cy < r.ry + r.rh) {
@@ -795,7 +1045,6 @@ function hitTestColumns(mx, my) {
 function computeStats() {
   const totalJobs = data.reduce((s, d) => s + (d.jobs || 0), 0);
 
-  // Job-weighted average exposure
   let weightedSum = 0, weightedCount = 0;
   for (const d of data) {
     if (d.exposure != null && d.jobs) {
@@ -805,7 +1054,6 @@ function computeStats() {
   }
   const weightedAvg = weightedCount > 0 ? weightedSum / weightedCount : 0;
 
-  // Histogram: jobs per exposure score 0-10
   const histogram = new Array(11).fill(0);
   for (const d of data) {
     if (d.exposure != null && d.jobs) {
@@ -813,7 +1061,6 @@ function computeStats() {
     }
   }
 
-  // Tiers
   const tiers = [
     { name: "Minimal", range: [0, 1], color: exposureColorCSS(0.5, 1) },
     { name: "Low", range: [2, 3], color: exposureColorCSS(2.5, 1) },
@@ -832,7 +1079,6 @@ function computeStats() {
     tier.pct = totalJobs > 0 ? (tier.jobs / totalJobs * 100) : 0;
   }
 
-  // Wages exposed (jobs with exposure >= 7, weighted by pay)
   let wagesExposed = 0;
   for (const d of data) {
     if (d.exposure != null && d.exposure >= 7 && d.jobs && d.pay) {
@@ -840,13 +1086,11 @@ function computeStats() {
     }
   }
 
-  // Render
   document.getElementById("statTotalJobs").textContent =
     (totalJobs / 1e6).toFixed(0) + "M";
   document.getElementById("statAvgExposure").innerHTML =
     `<span style="color:${exposureColorCSS(weightedAvg, 1)}">${weightedAvg.toFixed(1)}</span>`;
 
-  // Histogram
   const maxHist = Math.max(...histogram);
   const histEl = document.getElementById("histogram");
   histEl.innerHTML = histogram.map((count, i) => {
@@ -854,7 +1098,6 @@ function computeStats() {
     return `<div class="bar" style="height:${Math.max(2, h)}%;background:${exposureColorCSS(i, 0.7)}" title="${i}: ${formatNumber(count)} jobs"></div>`;
   }).join("");
 
-  // Tier breakdown
   const tierEl = document.getElementById("tierBar");
   tierEl.innerHTML = tiers.map(t =>
     `<div class="tier-row">
@@ -865,12 +1108,11 @@ function computeStats() {
     </div>`
   ).join("");
 
-  // Exposure by pay band
   const payBands = [
     { label: "<$35K", min: 0, max: 35000 },
-    { label: "$35–50K", min: 35000, max: 50000 },
-    { label: "$50–75K", min: 50000, max: 75000 },
-    { label: "$75–100K", min: 75000, max: 100000 },
+    { label: "$35\u201350K", min: 35000, max: 50000 },
+    { label: "$50\u201375K", min: 50000, max: 75000 },
+    { label: "$75\u2013100K", min: 75000, max: 100000 },
     { label: "$100K+", min: 100000, max: Infinity },
   ];
   const payChartEl = document.getElementById("payChart");
@@ -892,7 +1134,6 @@ function computeStats() {
     </div>`;
   }).join("");
 
-  // Exposure by education
   const eduGroups = [
     { label: "No degree/HS", match: ["No formal educational credential", "High school diploma or equivalent"] },
     { label: "Postsec/Assoc", match: ["Postsecondary nondegree award", "Some college, no degree", "Associate's degree"] },
@@ -918,7 +1159,6 @@ function computeStats() {
     </div>`;
   }).join("");
 
-  // Wages
   const trillions = wagesExposed / 1e12;
   document.getElementById("statWages").textContent =
     "$" + trillions.toFixed(1) + "T";
@@ -927,6 +1167,7 @@ function computeStats() {
 // ── Events ─────────────────────────────────────────────────────────────
 
 canvas.addEventListener("mousemove", (e) => {
+  if (isMobile()) return;
   const hit = currentView === "treemap" ? hitTest(e.clientX, e.clientY) : hitTestColumns(e.clientX, e.clientY);
   if (hit !== hovered) {
     hovered = hit;
@@ -942,6 +1183,7 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 canvas.addEventListener("click", (e) => {
+  if (isMobile()) return;
   const hit = currentView === "treemap" ? hitTest(e.clientX, e.clientY) : hitTestColumns(e.clientX, e.clientY);
   if (hit && hit.url) {
     window.open(hit.url, "_blank");
@@ -949,13 +1191,64 @@ canvas.addEventListener("click", (e) => {
 });
 
 canvas.addEventListener("mouseleave", () => {
+  if (isMobile()) return;
   hovered = null;
   hideTooltip();
   currentView === "treemap" ? draw() : drawColumns();
 });
 
+// ── Touch events (mobile) ──────────────────────────────────────────────
+
+canvas.addEventListener("touchend", (e) => {
+  if (!isMobile()) return;
+  e.preventDefault();
+  const touch = e.changedTouches[0];
+  const hit = currentView === "treemap"
+    ? hitTest(touch.clientX, touch.clientY)
+    : hitTestColumns(touch.clientX, touch.clientY);
+
+  if (hit) {
+    if (hit === hovered && hit.url) {
+      window.open(hit.url, "_blank");
+    } else {
+      hovered = hit;
+      currentView === "treemap" ? draw() : drawColumns();
+      showBottomSheet(hit);
+    }
+  } else {
+    hovered = null;
+    currentView === "treemap" ? draw() : drawColumns();
+    hideBottomSheet();
+  }
+}, { passive: false });
+
+document.querySelector(".bs-close").addEventListener("click", () => {
+  hovered = null;
+  currentView === "treemap" ? draw() : drawColumns();
+  hideBottomSheet();
+});
+
+// ── Stats toggle (mobile) ──────────────────────────────────────────────
+
+document.getElementById("statsToggle").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("stats-open");
+  requestAnimationFrame(() => resize());
+});
+
+// ── Resize ─────────────────────────────────────────────────────────────
+
 function resize() {
   dpr = window.devicePixelRatio || 1;
+
+  if (isMobile()) {
+    hideBottomSheet();
+    hovered = null;
+    const sidebar = document.getElementById('sidebar');
+    canvas.style.top = sidebar.offsetHeight + "px";
+  } else {
+    canvas.style.top = "0";
+  }
+
   if (currentView === "treemap") {
     layout();
     draw();
